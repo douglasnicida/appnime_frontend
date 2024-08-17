@@ -1,15 +1,6 @@
 'use client'
 
 import { useParams } from "next/navigation"
-import Image from "next/image";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
   
 export default function UserAnimeList() {
     const {id} = useParams();
