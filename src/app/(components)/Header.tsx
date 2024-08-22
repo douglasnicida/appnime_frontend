@@ -23,8 +23,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthContext } from "../contexts/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TLogin } from "../types/auth";
+import Link from "next/link";
+import { NextRouter, useRouter } from "next/router";
 
 const sedgwick = Sedgwick_Ave_Display({
   subsets: ["latin"],
@@ -33,7 +35,7 @@ const sedgwick = Sedgwick_Ave_Display({
   weight: "400",
 });
 
-function ProfileForm({ Login }: any) {
+function ProfileForm({ Login, onClose }: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
 
@@ -41,7 +43,9 @@ function ProfileForm({ Login }: any) {
     e.preventDefault();
 
     let data = {email,password} as TLogin;
+    
     Login(data);
+    onClose();
   }
 
   return (
@@ -63,11 +67,26 @@ function ProfileForm({ Login }: any) {
 }
 
 const Header = () => {
-  const { token, Login, Logoff } = useAuthContext();
+  const { token, Login, Logoff, ReturnUserByToken, isAuthenticated } = useAuthContext();
+
+  const [open, setOpen] = useState(false);
+
+  const [id, setID] = useState(-1)
+
+
+  async function handleGetUserID() {
+
+    if(isAuthenticated()){
+      const { id } = await ReturnUserByToken();
+      setID((id) ? id : -1);
+    }
+
+  }
   
   return (
     <div className="w-full h-28 flex justify-between items-center pt-8 px-16 md:px-48 lg:px-72 fixed">
-      <div
+      <Link
+        href={'/'}
         className={`${sedgwick.className} flex text-5xl cursor-pointer transition-all duration-200 ease-in-out group`}
       >
         <h1 className="group-hover:-translate-y-2 transition-all duration-500 ease-in-out">
@@ -76,8 +95,8 @@ const Header = () => {
         <h1 className="group-hover:text-red-500 group-hover:translate-y-2 transition-all duration-500 ease-in-out">
           Nime
         </h1>
-      </div>
-      <Dialog>
+      </Link>
+      <Dialog open={open} >
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <HamburgerMenuIcon width={35} height={35} cursor={"pointer"} />
@@ -92,7 +111,7 @@ const Header = () => {
             </DropdownMenuContent>
           ) : (
             <DropdownMenuContent>
-              <DialogTrigger asChild>
+              <DialogTrigger onClick={() => {setOpen(true)}} asChild>
                 <DropdownMenuItem className="cursor-pointer">
                   <h3>Login</h3>
                 </DropdownMenuItem>
@@ -107,7 +126,7 @@ const Header = () => {
                 Coloque suas credenciais para acessar sua conta.
               </DialogDescription>
             </DialogHeader>
-            <ProfileForm Login={Login} />
+            <ProfileForm Login={Login} onClose={() => setOpen(false)}/>
           </DialogContent>
         </DropdownMenu>
       </Dialog>

@@ -12,7 +12,8 @@ export type TLogin = {
 
 export type TAuthContext = {
     token: string | undefined;
-    setToken: SetStateAction;
     Login: (data: TLogin) => void;
     Logoff: () => void;
+    ReturnUserByToken: () => any | null;
+    isAuthenticated: () => boolean;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api";
 import { TAuthContext, TLogin } from "../types/auth";
 import { toast } from "@/components/ui/use-toast";
@@ -9,18 +9,25 @@ import { Toast, ToastAction } from "@/components/ui/toast";
 export const AuthContext = createContext<TAuthContext | undefined>(undefined);
 // wrapper for organization
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  let [token, setToken] = useState("");
+  let [token, setToken] = useState('');
 
-  function Login(data: TLogin) {
+  useEffect(() => {
+    const localStorageToken = localStorage.getItem('token')
+    
+    if(localStorageToken){
+      setToken(localStorageToken);
+    }
+  }, [])
+
+  async function Login(data: TLogin) {
     try {
-      api.post("/auth/login", data).then((res) => {
+      await api.post("/auth/login", data).then((res) => {
         setToken(res.data.access_token);
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', res.data.access_token);
         toast({
-            description: "Conta acessada com sucesso.",
-          });
+          description: "Conta acessada com sucesso.",
+        });
       });
-
      
     } catch (e) {
         toast({
@@ -34,15 +41,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   function Logoff() {
-    setToken(""); 
+    setToken(''); 
     localStorage.removeItem('token');
     toast({
         description: "Saiu da conta com sucesso.",
       });
   }
 
+  function isAuthenticated() {
+    const verifyToken = localStorage.getItem('token');
+
+    if(!verifyToken) return false;
+
+    return true;
+  }
+
+  async function ReturnUserByToken() {
+    let res;
+
+    const res_token = localStorage.getItem('token')
+
+      if (localStorage.getItem('token')) {
+        const { data } = await api.get('/auth/profile', {
+          headers: {
+            Authorization: `Bearer ${res_token}`,
+          }
+        });
+
+        res = {"id": data.sub, "email": data.email}
+      } else {
+        res = -1;
+      }
+
+      return res
+  }
+
   return (
-    <AuthContext.Provider value={{ token, setToken, Login, Logoff }}>
+    <AuthContext.Provider value={{ token, Login, Logoff, ReturnUserByToken, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

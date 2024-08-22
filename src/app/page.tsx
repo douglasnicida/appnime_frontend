@@ -7,15 +7,6 @@ import AnimeCard from "./(components)/AnimeCard";
 import { Anime } from "./types/anime";
 
 export default function Home() {
-  const { setToken } = useAuthContext();
-
-  useEffect(() => {
-    let token = localStorage.getItem('token');
-
-    if(token){
-      setToken(token);
-    }
-  }, [])
 
   const data = {
     id: 0,

@@ -24,7 +24,7 @@ const AnimeCard = ({ anime } : AnimeCardProps) => {
   }
 
   return (
-    <Card className="border-white/20">
+    <Card className="border-white/20 min-w-[330px] w-auto">
       <CardHeader>
         <Image
           src={anime.image}
@@ -38,13 +38,13 @@ const AnimeCard = ({ anime } : AnimeCardProps) => {
       </CardHeader>
       <CardContent className="flex flex-col text-[13px] gap-3">
         <p className="text-justify">{description}</p>
-        <p><b>Estúdio:</b> {anime.studio_name}</p>
         <p><b>Lançado em:</b> {date_started_airing}</p>
-        <div className="flex w-full justify-between mt-4">
+        <p><b>Número de episódios:</b> {anime.ep_count}</p>
+        
+        <div className="flex items-center justify-between">
           <p><b className={`${avg_rating_color}`}>{anime.avg_rating}</b>/10</p>
-          <p><b>eps:</b> {anime.ep_count}</p>
+          <Button className="w-fit mt-2 self-end">+ Adicionar</Button>
         </div>
-        <Button className="w-fit mt-2 self-end">Adicionar +</Button>
       </CardContent>
     </Card>
   );
