@@ -26,7 +26,9 @@ import { useAuthContext } from "../contexts/auth";
 import { useEffect, useState } from "react";
 import { TLogin } from "../types/auth";
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const sedgwick = Sedgwick_Ave_Display({
   subsets: ["latin"],
@@ -35,9 +37,10 @@ const sedgwick = Sedgwick_Ave_Display({
   weight: "400",
 });
 
-function ProfileForm({ Login, onClose }: any) {
+function ProfileForm({Login}: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
+
 
   function handleLogin(e : any) {
     e.preventDefault();
@@ -45,7 +48,6 @@ function ProfileForm({ Login, onClose }: any) {
     let data = {email,password} as TLogin;
     
     Login(data);
-    onClose();
   }
 
   return (
@@ -67,21 +69,25 @@ function ProfileForm({ Login, onClose }: any) {
 }
 
 const Header = () => {
-  const { token, Login, Logoff, ReturnUserByToken, isAuthenticated } = useAuthContext();
+  let { Login, Logoff, user } = useAuthContext();
 
-  const [open, setOpen] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
 
-  const [id, setID] = useState(-1)
+  const router = useRouter();
 
+  function dropDownMenuUpdates() {
+    let res = false;
 
-  async function handleGetUserID() {
+    if(user) res = true;
 
-    if(isAuthenticated()){
-      const { id } = await ReturnUserByToken();
-      setID((id) ? id : -1);
-    }
-
+    setIsLogged(res)
   }
+
+  useEffect(() => {
+    dropDownMenuUpdates()
+    console.log(user)
+    console.log(isLogged)
+  }, [user])
   
   return (
     <div className="w-full h-28 flex justify-between items-center pt-8 px-16 md:px-48 lg:px-72 fixed">
@@ -96,22 +102,22 @@ const Header = () => {
           Nime
         </h1>
       </Link>
-      <Dialog open={open} >
-        <DropdownMenu>
+      <Dialog>
+      <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <HamburgerMenuIcon width={35} height={35} cursor={"pointer"} />
           </DropdownMenuTrigger>
 
-          {token ? (
+          {isLogged ? (
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer">Minha Lista</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {router.push(`/${user?.id}/list`);}}>Minha Lista</DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">Perfil</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Sair</DropdownMenuItem>
             </DropdownMenuContent>
           ) : (
             <DropdownMenuContent>
-              <DialogTrigger onClick={() => {setOpen(true)}} asChild>
+              <DialogTrigger asChild>
                 <DropdownMenuItem className="cursor-pointer">
                   <h3>Login</h3>
                 </DropdownMenuItem>
@@ -126,7 +132,7 @@ const Header = () => {
                 Coloque suas credenciais para acessar sua conta.
               </DialogDescription>
             </DialogHeader>
-            <ProfileForm Login={Login} onClose={() => setOpen(false)}/>
+            <ProfileForm Login={Login}/>
           </DialogContent>
         </DropdownMenu>
       </Dialog>

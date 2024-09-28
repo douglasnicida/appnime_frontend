@@ -15,9 +15,12 @@ interface AnimeCardProps {
 }
 
 const AnimeCard = ({ anime } : AnimeCardProps) => {
+  let avg_rating = Number(anime.avg_rating);
+  let start_airing = anime.start_airing.split('-');
+
   const description = anime.description.substring(0, 150) + (anime.description.length > 150 ? '...' : '');
-  const date_started_airing = `${normalizeDates(anime.start_airing.getDay())}/${normalizeDates(anime.start_airing.getMonth())}/${normalizeDates(anime.start_airing.getFullYear())}`
-  const avg_rating_color = (anime.avg_rating > 8) ? 'text-green-400' : (anime.avg_rating > 5) ? 'text-yellow-400' : 'text-red-400';
+  const date_started_airing = `${normalizeDates(Number(start_airing[2]))}/${normalizeDates(Number(start_airing[1]))}/${normalizeDates(Number(start_airing[0]))}`
+  const avg_rating_color = (avg_rating > 8) ? 'text-green-400' : (avg_rating > 5) ? 'text-yellow-400' : 'text-red-400';
 
   function normalizeDates(n: number) {
     return n < 10 ? `0${n}` : n;

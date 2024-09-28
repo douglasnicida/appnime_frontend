@@ -1,45 +1,39 @@
 'use client'
 
 import { useAuthContext } from "@/app/contexts/auth";
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation"
+import { useEffect } from "react";
   
 export default function UserAnimeList() {
-    const {id} = useParams();
+    const { id } = useParams();
 
-    const [userID, setUserID] = useState(-1);
-    const { token, ReturnUserByToken, isAuthenticated } = useAuthContext();
+    const router = useRouter()
+
+    const { user } = useAuthContext();
 
     async function verifyUser() {
-        const res = await ReturnUserByToken()
-        setUserID(res.data)
-
-        if (!isAuthenticated() || userID != Number(id)) {
-            
+       if (!user || user?.id != Number(id)) {
+            router.push('/');
         }
     }
 
     useEffect(() => {
-
         verifyUser()
-        
-    }, [token])
+    }, [user])
 
     return (
         <main className="flex flex-col items-center w-screen h-screen p-20">
             
-            {
-                isAuthenticated() &&
-                <div className="">
-                    List Page <br/>
-                    UserID: {id}
-                    <ul>
-                        <li>
-                            
-                        </li>
-                    </ul>
-                </div>
-            }
+            <div className="">
+                List Page <br/>
+                UserID: {id}
+                <ul>
+                    <li>
+                        
+                    </li>
+                </ul>
+            </div>
+            
         </main>
     )
 }

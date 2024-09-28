@@ -1,6 +1,7 @@
 import { SetStateAction } from "react";
 
 export type AuthUser = {
+    id: number;
     email: string;
     token: string;
 }
@@ -11,9 +12,7 @@ export type TLogin = {
 }
 
 export type TAuthContext = {
-    token: string | undefined;
     Login: (data: TLogin) => void;
     Logoff: () => void;
-    ReturnUserByToken: () => any | null;
-    isAuthenticated: () => boolean;
+    user: AuthUser | null;
 }

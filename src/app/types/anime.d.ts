@@ -9,11 +9,12 @@ export type Anime = {
     jp_title: string;
     en_title?: string;
     description: string;
-    start_airing: Date;
-    finished_airing: Date | null;
-    avg_rating: number;
+    start_airing: string;
+    finished_airing: string | null;
+    avg_rating: string;
     image: string;
     ep_count: number;
     type: string;
     studio_name?: string;
+    recently_added: boolean;
 }
