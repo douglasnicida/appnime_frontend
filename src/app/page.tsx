@@ -12,20 +12,20 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchAnimes() {
-      const response = await axios.get('https://kitsu.io/api/edge/trending/anime')
-  
-      return response
+      const { data } = await axios.get('https://kitsu.io/api/edge/trending/anime')
+      let kitsuAnimes = data?.data;
+      return kitsuAnimes;
     }
   
     async function getAnimes() {
       let paginationData = {
         page: 0,
-        limit: 5,
+        limit: 10,
         offset: 0,
       }
       let response = await api.get(`/animes?page=${paginationData.page}&limit=${paginationData.limit}&offset=${paginationData.offset}`)
   
-      console.log(response.data.payload.data)
+      setAnimes(response.data.payload.data)
     }
   
     function verifyIsRecent(anime_release_date_month : number, anime_release_date_year : number) {
@@ -41,14 +41,13 @@ export default function Home() {
     async function addAnimeToSystem() {
       const { data } = await fetchAnimes()
   
-      let animes = data.data
+      let animes = data?.data
   
       if(animes) {
-        animes.map((anime : any) => {
+        animes.map(async (anime : any) => {
           let anime_aux = anime.attributes
   
           let apiData : Anime = {
-            id: anime_aux.id,
             description: anime_aux.description,
             jp_title: anime_aux.titles.en_jp,
             en_title: anime_aux.titles.en,
@@ -64,41 +63,35 @@ export default function Home() {
   
           // TODO: arrumar criação de animes na API
           try {
-            api.post('/animes/', apiData)
-          }
-          catch (e) {}
+            await api.post('/animes/', apiData)
+          } catch (e) {}
         })
         
       }
   
     }
 
-    getAnimes()
-    addAnimeToSystem()
+    async function asyncEffect(){
+      await getAnimes()
+      addAnimeToSystem()
+    }
+
+    asyncEffect();
+
   }, [])
 
-  const data = {
-    en_title: "Demon Slayer",
-    jp_title: "Kimetsu no Yaiba",
-    image: "https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2021/09/10/demon-slayer-capa.png",
-    description: "A young boy named Tanjiro Kamado joins the Demon Slayer Corps to a...",
-    ep_count: 26,
-    avg_rating: "9.5",
-    type: "Action, Adventure, Fantasy",
-    finished_airing: "2024-23-23",
-    start_airing: "2023-34-34",
-    studio_name: "Ufotable",
-    recently_added: false
-  } as Anime;
-
   return (
-    <main className="flex min-h-screen flex-col px-24 pt-44 container">
+    <main className="flex min-h-screen flex-col px-16 pt-44 container">
       <div className="grid grid-cols-4 gap-4">
 
         {
-
+          animes &&
+          animes.map((anime, index) => {
+            return (
+              <AnimeCard anime={anime} key={index}/>
+            )
+          })
         }
-        <AnimeCard anime={data}/>
       </div>
     </main>
   );

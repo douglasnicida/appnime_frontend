@@ -14,5 +14,6 @@ export type TLogin = {
 export type TAuthContext = {
     Login: (data: TLogin) => void;
     Logoff: () => void;
-    user: AuthUser | null;
+    getUserProfile: () => any;
+    token: string | null;
 }

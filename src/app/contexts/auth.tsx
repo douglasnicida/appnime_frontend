@@ -10,41 +10,19 @@ export const AuthContext = createContext<TAuthContext | undefined>(undefined);
 // wrapper for organization
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   
-  const [token, setToken] = useState( (localStorage.getItem('token')) ? localStorage.getItem('token') : null );
-  const [user, setUser] = useState(null);
-
+  const [token, setToken] = useState<string | null>(null)
   useEffect(() => {
-    async function ReturnUserByToken() {
-      let res : any;
-  
-      if(!token) return;
-  
-      try {
-        const { data } = await api.get('/auth/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-  
-        res = {"id": data.sub, "email": data.email, "token": token}
-      } catch(e) {
-        res = null;
-        localStorage.removeItem('token')
-        setUser(null)
-        setToken('')
-      }
-  
-      setUser(res);
+    const storedToken = localStorage.getItem('token');
+    if(storedToken){
+      setToken(storedToken)
     }
-
-    ReturnUserByToken();
-  }, [])
+  },[])
 
   async function Login(data: TLogin) {
     try {
       await api.post("/auth/login", data).then((res) => {
         setToken(res.data.access_token);
-        localStorage.setItem('token', res.data.access_token);
+        window.localStorage.setItem('token', res.data.access_token);
         toast({
           description: "Conta acessada com sucesso.",
         });
@@ -57,23 +35,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             description: "Credenciais inválidas.",
             action: <ToastAction altText="Tente novamente">Tente Novamente</ToastAction>,
           })
-          console.log(e)
     }
   }
 
   function Logoff() {
     setToken('');
-    setUser(null);
-
-    localStorage.removeItem('token');
+    window.localStorage.removeItem('token');
 
     toast({
         description: "Saiu da conta com sucesso.",
       });
   }
 
+  async function getUserProfile() {
+    try{
+      const { data } = await api.get('/auth/profile',{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      return data
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ Login, Logoff, user }}>
+    <AuthContext.Provider value={{ Login, Logoff, getUserProfile ,token }}>
       {children}
     </AuthContext.Provider>
   );

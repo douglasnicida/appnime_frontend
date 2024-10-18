@@ -9,17 +9,19 @@ export default function UserAnimeList() {
 
     const router = useRouter()
 
-    const { user } = useAuthContext();
+    const { token, getUserProfile } = useAuthContext();
 
     async function verifyUser() {
-       if (!user || user?.id != Number(id)) {
+        const data = await getUserProfile();
+
+       if (!data || data?.id != Number(id)) {
             router.push('/');
         }
     }
 
     useEffect(() => {
         verifyUser()
-    }, [user])
+    }, [token])
 
     return (
         <main className="flex flex-col items-center w-screen h-screen p-20">

@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { api } from "../api";
 
 const sedgwick = Sedgwick_Ave_Display({
   subsets: ["latin"],
@@ -69,28 +70,33 @@ function ProfileForm({Login}: any) {
 }
 
 const Header = () => {
-  let { Login, Logoff, user } = useAuthContext();
+  let { Login, Logoff, getUserProfile, token } = useAuthContext();
 
   const [isLogged, setIsLogged] = useState(false);
+  const [userID, setUserID] = useState<string | null>(null);
 
   const router = useRouter();
 
-  function dropDownMenuUpdates() {
-    let res = false;
+  async function dropDownMenuUpdates() {
+    const data = await getUserProfile()
 
-    if(user) res = true;
+    if(data) {
+      setUserID(data.id)
+      setIsLogged(true)
+    }
 
-    setIsLogged(res)
+  }
+
+  async function checkToken() {
+    await dropDownMenuUpdates()
   }
 
   useEffect(() => {
-    dropDownMenuUpdates()
-    console.log(user)
-    console.log(isLogged)
-  }, [user])
+    checkToken()
+  }, [token])
   
   return (
-    <div className="w-full h-28 flex justify-between items-center pt-8 px-16 md:px-48 lg:px-72 fixed">
+    <div className="w-full h-28 flex justify-between items-center py-4 px-16 md:px-48 lg:px-72 fixed bg-[#121212] z-50">
       <Link
         href={'/'}
         className={`${sedgwick.className} flex text-5xl cursor-pointer transition-all duration-200 ease-in-out group`}
@@ -110,7 +116,7 @@ const Header = () => {
 
           {isLogged ? (
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => {router.push(`/${user?.id}/list`);}}>Minha Lista</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {console.log(userID); router.push(`/${userID}/list`);}}>Minha Lista</DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">Perfil</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Sair</DropdownMenuItem>
