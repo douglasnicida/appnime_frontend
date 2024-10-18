@@ -5,12 +5,14 @@ import { api } from "../api";
 import { AuthUser, TAuthContext, TLogin } from "../types/auth";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
 
 export const AuthContext = createContext<TAuthContext | undefined>(undefined);
 // wrapper for organization
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   const [token, setToken] = useState<string | null>(null)
+
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if(storedToken){
@@ -42,6 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken('');
     window.localStorage.removeItem('token');
 
+    const router = useRouter();
+    router.push('/');
+
     toast({
         description: "Saiu da conta com sucesso.",
       });
@@ -55,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       })
 
-      return data
+      return data;
     } catch(e) {
       console.log(e)
     }

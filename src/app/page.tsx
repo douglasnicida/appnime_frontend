@@ -61,7 +61,6 @@ export default function Home() {
             recently_added: verifyIsRecent(Number(anime_aux.startDate.split('-')[1]), Number(anime_aux.startDate.split('-')[0]))
           }
   
-          // TODO: arrumar criação de animes na API
           try {
             await api.post('/animes/', apiData)
           } catch (e) {}
@@ -81,8 +80,8 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="flex min-h-screen flex-col px-16 pt-44 container">
-      <div className="grid grid-cols-4 gap-4">
+    <main className="flex min-h-screen flex-col mx-5 md:px-16 pt-44 md:container">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 
         {
           animes &&

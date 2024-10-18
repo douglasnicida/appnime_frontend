@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -27,9 +26,6 @@ import { useEffect, useState } from "react";
 import { TLogin } from "../types/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { api } from "../api";
 
 const sedgwick = Sedgwick_Ave_Display({
   subsets: ["latin"],
@@ -116,26 +112,26 @@ const Header = () => {
 
           {isLogged ? (
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => {console.log(userID); router.push(`/${userID}/list`);}}>Minha Lista</DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">Perfil</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {console.log(userID); router.push(`/${userID}/list`);}}>My List</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Sair</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Exit</DropdownMenuItem>
             </DropdownMenuContent>
           ) : (
             <DropdownMenuContent>
               <DialogTrigger asChild>
                 <DropdownMenuItem className="cursor-pointer">
-                  <h3>Login</h3>
+                  <h3>SignIn</h3>
                 </DropdownMenuItem>
               </DialogTrigger>
-              <DropdownMenuItem className="cursor-pointer">Cadastrar</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">SignUp</DropdownMenuItem>
             </DropdownMenuContent>
           )}
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Login</DialogTitle>
               <DialogDescription>
-                Coloque suas credenciais para acessar sua conta.
+                Insert yopur credentials to access your account.
               </DialogDescription>
             </DialogHeader>
             <ProfileForm Login={Login}/>
