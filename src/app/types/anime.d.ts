@@ -1,6 +1,5 @@
 export type AnimeUser = {
-    userID: number;
-    animeID: number;
+    anime: Anime
     user_anime_rating: number;
 }
 

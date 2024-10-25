@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, SetStateAction, useContext, useEffect, useState } from "react";
 import { api } from "../api";
 import { AuthUser, TAuthContext, TLogin } from "../types/auth";
 import { toast } from "@/components/ui/use-toast";
@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   },[])
 
-  async function Login(data: TLogin) {
+  async function Login(data: TLogin, setIsDialogOpen: any) {
     try {
       await api.post("/auth/login", data).then((res) => {
         setToken(res.data.access_token);
@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toast({
           description: "Conta acessada com sucesso.",
         });
+        setIsDialogOpen(false);
       });
      
     } catch (e) {
@@ -40,11 +41,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const router = useRouter();
   function Logoff() {
     setToken('');
     window.localStorage.removeItem('token');
-
-    const router = useRouter();
+    
     router.push('/');
 
     toast({

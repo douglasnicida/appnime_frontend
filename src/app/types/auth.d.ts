@@ -12,7 +12,7 @@ export type TLogin = {
 }
 
 export type TAuthContext = {
-    Login: (data: TLogin) => void;
+    Login: (data: TLogin, setIsDialogOpen: any) => void;
     Logoff: () => void;
     getUserProfile: () => any;
     token: string | null;

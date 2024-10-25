@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -34,7 +35,7 @@ const sedgwick = Sedgwick_Ave_Display({
   weight: "400",
 });
 
-function ProfileForm({Login}: any) {
+function ProfileForm({Login, setIsDialogOpen}: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
 
@@ -44,7 +45,7 @@ function ProfileForm({Login}: any) {
 
     let data = {email,password} as TLogin;
     
-    Login(data);
+    Login(data, setIsDialogOpen);
   }
 
   return (
@@ -71,20 +72,19 @@ const Header = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [userID, setUserID] = useState<string | null>(null);
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const router = useRouter();
 
-  async function dropDownMenuUpdates() {
+  async function checkToken() {
     const data = await getUserProfile()
 
     if(data) {
       setUserID(data.id)
       setIsLogged(true)
+    } else {
+      setIsLogged(false);
     }
-
-  }
-
-  async function checkToken() {
-    await dropDownMenuUpdates()
   }
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const Header = () => {
           Nime
         </h1>
       </Link>
-      <Dialog>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <HamburgerMenuIcon width={35} height={35} cursor={"pointer"} />
@@ -112,29 +112,29 @@ const Header = () => {
 
           {isLogged ? (
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer" onClick={() => {console.log(userID); router.push(`/${userID}/list`);}}>My List</DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => {router.push(`/${userID}/list`)}}>Minha Lista</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Perfil</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Exit</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer" onClick={Logoff}>Sair</DropdownMenuItem>
             </DropdownMenuContent>
           ) : (
             <DropdownMenuContent>
               <DialogTrigger asChild>
-                <DropdownMenuItem className="cursor-pointer">
-                  <h3>SignIn</h3>
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {setIsDialogOpen(true)}}>
+                  <h3>Entrar</h3>
                 </DropdownMenuItem>
               </DialogTrigger>
-              <DropdownMenuItem className="cursor-pointer">SignUp</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Cadastrar</DropdownMenuItem>
             </DropdownMenuContent>
           )}
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Login</DialogTitle>
               <DialogDescription>
-                Insert yopur credentials to access your account.
+                Insira suas credenciais para acessar sua conta.
               </DialogDescription>
             </DialogHeader>
-            <ProfileForm Login={Login}/>
+            <ProfileForm Login={Login} setIsDialogOpen={setIsDialogOpen}/>
           </DialogContent>
         </DropdownMenu>
       </Dialog>
