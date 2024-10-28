@@ -73,6 +73,7 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
           <CardDescription>{anime.en_title}</CardDescription>
         </div>
       </CardHeader>
+
       <CardContent className="flex flex-col text-[13px] gap-3">
         <p className="text-justify">{description}</p>
         <p><b>Lançado em:</b> {date_started_airing}</p>
@@ -83,10 +84,9 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
           {
             !user_rating ? <AddAnimeButton anime={anime}/> : <RemoveAnimeButton anime={anime} animesUserList={animesUser ? animesUser : []} setAnimesUserList={setAnimesUser ? setAnimesUser : null}/>
           }
-
-          
         </div>
       </CardContent>
+      
     </Card>
   );
 };

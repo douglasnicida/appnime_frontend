@@ -76,12 +76,14 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
 
               <DialogContent className="sm:max-w-md md:max-w-lg">
                 <form onSubmit={handleAddAnimeUser}>
+
                     <DialogHeader>
                         <DialogTitle>Adicione o anime na sua lista</DialogTitle>
                         <DialogDescription>
                             Selecione a nota do anime na sua opinião.
                         </DialogDescription>
                     </DialogHeader>
+
                     <div className="flex items-center space-x-2">
                         <div className="grid flex-1 gap-2">
                             <Label htmlFor="user-rating" className="sr-only">
@@ -91,11 +93,13 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
                             onChange={(e) => {handleSetRating(e)}} type="number" required/>
                         </div>
                     </div>
+
                     <DialogFooter className="sm:justify-start">
                         <Button type="submit" size="lg" className="flex w-full mt-3 px-3 self-end">
                             Adicionar
                         </Button>
                     </DialogFooter>
+                    
                 </form>
               </DialogContent>
           </Dialog>

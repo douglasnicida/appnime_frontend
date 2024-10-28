@@ -1,11 +1,79 @@
 'use client'
 
 import AnimeCard from "@/app/(components)/AnimeCard";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+
 import { api } from "@/app/api";
 import { useAuthContext } from "@/app/contexts/auth";
 import { AnimeUser  } from "@/app/types/anime";
+import { MixerVerticalIcon } from "@radix-ui/react-icons";
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+
+enum OrderByTypes {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
+
+type OrderByOptions = {
+    name: boolean;
+    rating: boolean;
+    type: OrderByTypes;
+}
+
+const OrderByDropDown = ({setOrderBy, prevOrderBy} : any) => {
+    const [orderBy, setOrderByState] = useState<'name' | 'rating'>('rating');
+    const [orderDirection, setOrderDirection] = useState<OrderByTypes>(OrderByTypes.DESC);
+
+    function handleOrderByChange(value: 'name' | 'rating') {
+        setOrderByState(value);
+        setOrderBy((prevState: OrderByOptions) => ({
+            ...prevState,
+            name: value === 'name',
+            rating: value === 'rating',
+        }));
+    }
+
+    function handleOrderDirectionChange(value: OrderByTypes) {
+        setOrderDirection(value);
+        setOrderBy((prevState: OrderByOptions) => ({
+            ...prevState,
+            type: value,
+        }));
+    }
+
+    return (
+        <div className="flex space-x-4">
+    <DropdownMenu>
+        <DropdownMenuTrigger>
+            <MixerVerticalIcon width={30} height={30}/>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+            <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('name')} checked={prevOrderBy.name}>Nome</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('rating')} checked={prevOrderBy.rating}>Rating</DropdownMenuCheckboxItem>
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.ASC)}>Crescente</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.DESC)}>Decrescente</DropdownMenuItem>
+        </DropdownMenuContent>
+    </DropdownMenu>
+
+    
+</div>
+    );
+};
 
 export default function UserAnimeList() {
     const { id } = useParams();
@@ -16,6 +84,8 @@ export default function UserAnimeList() {
     const [userAnime, setUserAnime] = useState<AnimeUser[]>([]);
     const [enable, setEnable] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [orderBy, setOrderBy] = useState<OrderByOptions>({name: false,  rating: true, type: OrderByTypes.DESC});
 
     async function verifyUser () {
         const data = await getUserProfile();
@@ -29,8 +99,11 @@ export default function UserAnimeList() {
 
     async function getUserAnime() {
         setLoading(true);
+        const queryName = `${orderBy.name ? `orderByName=${orderBy.type}` : ''}`
+        const queryRating = `${orderBy.rating ? `orderByRating=${orderBy.type}` : ''}`
+        const query = queryName && queryRating ? `?${queryName}&${queryRating}` : `?${queryName}${queryRating}`
         try {
-            const { data } = await api.get(`/user-animes/user`, {
+            const { data } = await api.get(`/user-animes/user${query}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -46,7 +119,7 @@ export default function UserAnimeList() {
 
     useEffect(() => {
         if (enable === true) getUserAnime();
-    }, [enable]);
+    }, [enable, orderBy]);
 
     useEffect(() => {
         if(token) verifyUser();
@@ -58,7 +131,10 @@ export default function UserAnimeList() {
     return (
         <main className="flex flex-col container w-screen h-screen pb-20 pt-32">
             <div className="flex flex-col">
-                <h1 className="text-[30px] font-bold underline">My list</h1>
+                <div className="flex justify-between items-center">
+                    <h1 className="text-[30px] font-bold underline">My list</h1>
+                    <OrderByDropDown setOrderBy={setOrderBy} prevOrderBy={orderBy}/>
+                </div>
                 {loading ? (
                     <div className="text-2xl">Loading...</div>
                 ) : (
