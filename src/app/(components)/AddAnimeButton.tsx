@@ -19,7 +19,9 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
 
   const { token } = useAuthContext();
 
-  const handleAddAnimeUser = async () => {
+  const handleAddAnimeUser = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+
       if (userRating === -1) {
         toast({
           variant: "destructive",
@@ -71,27 +73,30 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
               <DialogTrigger asChild>
                   <Button className="w-fit mt-2 self-end" onClick={() => setDialogOpen(true)}>+ Adicionar</Button>
               </DialogTrigger>
+
               <DialogContent className="sm:max-w-md md:max-w-lg">
-                  <DialogHeader>
-                      <DialogTitle>Adicione o anime na sua lista</DialogTitle>
-                      <DialogDescription>
-                          Selecione a nota do anime na sua opinião.
-                      </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex items-center space-x-2">
-                      <div className="grid flex-1 gap-2">
-                          <Label htmlFor="user-rating" className="sr-only">
-                              Nota do anime
-                          </Label>
-                          <Input placeholder="Insira a nota do anime aqui (Valores de 0 a 10.0, ex: 8.5, 9)" id="user-rating" 
-                          onChange={(e) => {handleSetRating(e)}} type="number" required/>
-                      </div>
-                  </div>
-                  <DialogFooter className="sm:justify-start">
-                      <Button type="submit" size="lg" className="flex w-full px-3 self-end" onClick={handleAddAnimeUser}>
-                          Adicionar
-                      </Button>
-                  </DialogFooter>
+                <form onSubmit={handleAddAnimeUser}>
+                    <DialogHeader>
+                        <DialogTitle>Adicione o anime na sua lista</DialogTitle>
+                        <DialogDescription>
+                            Selecione a nota do anime na sua opinião.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center space-x-2">
+                        <div className="grid flex-1 gap-2">
+                            <Label htmlFor="user-rating" className="sr-only">
+                                Nota do anime
+                            </Label>
+                            <Input placeholder="Insira a nota do anime aqui (Valores de 0 a 10.0, ex: 8.5, 9)" id="user-rating" 
+                            onChange={(e) => {handleSetRating(e)}} type="number" required/>
+                        </div>
+                    </div>
+                    <DialogFooter className="sm:justify-start">
+                        <Button type="submit" size="lg" className="flex w-full mt-3 px-3 self-end">
+                            Adicionar
+                        </Button>
+                    </DialogFooter>
+                </form>
               </DialogContent>
           </Dialog>
       );

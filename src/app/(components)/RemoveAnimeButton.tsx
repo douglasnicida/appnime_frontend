@@ -15,7 +15,7 @@ interface RemoveAnimeButtonProps {
   animesUserList: AnimeUser[];
   setAnimesUserList: SetStateAction<any>;
 }
-// TODO: ARRUMAR ATUALIZAÇÃO DA REMOÇÃO
+
 export default function RemoveAnimeButton({ anime, animesUserList, setAnimesUserList } : RemoveAnimeButtonProps) {
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
 
@@ -49,17 +49,19 @@ export default function RemoveAnimeButton({ anime, animesUserList, setAnimesUser
                   <Button className="w-fit mt-2 self-end" onClick={() => setDialogOpen(true)}>Remover</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md md:max-w-lg">
-                  <DialogHeader>
+                  <DialogHeader className="py-7">
                       <DialogTitle>Deseja remover {anime.en_title} da sua lista de animes?</DialogTitle>
                   </DialogHeader>
                   <DialogFooter className="sm:justify-start">
-                      <Button type="submit" size="lg" className="flex w-full px-3 self-end" onClick={handleRemoveAnimeUser}>
+                    <form onSubmit={handleRemoveAnimeUser} className="flex w-full gap-5">
+                      <Button type="submit" className="w-full" size="lg">
                           Sim
                       </Button>
 
-                      <Button type="submit" size="lg" className="flex w-full px-3 self-end" onClick={() => {setDialogOpen(false)}}>
+                      <Button size="lg" className="w-full" onClick={() => {setDialogOpen(false)}}>
                           Não
                       </Button>
+                    </form>
                   </DialogFooter>
               </DialogContent>
           </Dialog>

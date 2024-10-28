@@ -63,8 +63,7 @@ export default function AnimeDetails() {
                     </div>
                     <div className="relative flex flex-col gap-2 h-auto">
                         <h1 className="font-bold text-[23px]">{anime.jp_title} <span>({anime.en_title})</span></h1>
-                        {/* TODO: ADD READ MORE BUTTON IF SURPASS 1000 CHARACTERS */}
-                        <p className="text-gray-400 text-justify">{anime.description}</p>
+                        <p className="text-gray-400 text-justify text-ellipsis overflow-y-scroll scroll-ml-3 h-full">{anime.description}</p>
                         <div className="flex flex-col md:flex-row md:gap-x-14">
                             <div className="">
                                 <p><b>Started airing:</b> {date_started_airing}</p>

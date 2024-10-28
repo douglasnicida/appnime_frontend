@@ -8,6 +8,8 @@ import { api } from "./api";
 
 export default function Home() {
 
+  // FAZER MAIS SEÇÕES NA HOME
+
   const [animes, setAnimes] = useState([]);
 
   useEffect(() => {

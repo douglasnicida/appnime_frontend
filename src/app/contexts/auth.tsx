@@ -61,6 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       })
 
+      console.log(data)
+
       return data;
     } catch(e) {
       console.log(e)

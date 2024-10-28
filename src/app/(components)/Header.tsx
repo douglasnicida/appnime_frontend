@@ -55,7 +55,7 @@ function ProfileForm({Login, setIsDialogOpen}: any) {
     >
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
-        <Input type="email" id="email" placeholder="example@domain.com" onChange={(event) => { setEmail(event.target.value) }}/>
+        <Input type="email" id="email" placeholder="exemplo@dominio.com" onChange={(event) => { setEmail(event.target.value) }}/>
       </div>
       <div className="grid gap-2">
         <Label htmlFor="password">Senha</Label>
