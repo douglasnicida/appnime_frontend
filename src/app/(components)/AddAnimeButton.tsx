@@ -41,14 +41,19 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
         })
           return;
       }
-      const success = await api.post('/user-animes/', {
-        animeID: anime.id,
-        user_anime_rating: userRating,
-      }, {
-        headers:  {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+
+      let success = false;
+      if(anime.id) {
+        success = await api.post('/user-animes/', {
+          animeID: anime.id,
+          user_anime_rating: userRating,
+        }, {
+          headers:  {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+      }
+      
       
       if (success) {
           setDialogOpen(false);

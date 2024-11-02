@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api";
-import { AuthUser, TAuthContext, TLogin } from "../types/auth";
+import { TAuthContext, TLogin } from "../types/auth";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
@@ -60,8 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'Authorization': `Bearer ${token}`
         }
       })
-
-      console.log(data)
 
       return data;
     } catch(e) {

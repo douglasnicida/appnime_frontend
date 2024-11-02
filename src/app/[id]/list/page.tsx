@@ -18,8 +18,8 @@ import { useAuthContext } from "@/app/contexts/auth";
 import { AnimeUser  } from "@/app/types/anime";
 import { MixerVerticalIcon } from "@radix-ui/react-icons";
 import { useParams, useRouter } from "next/navigation"
-import { SetStateAction, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import SearchInput from "@/app/(components)/SearchInput";
 
 enum OrderByTypes {
     ASC = 'ASC',
@@ -86,6 +86,7 @@ export default function UserAnimeList() {
     const [loading, setLoading] = useState(true);
 
     const [orderBy, setOrderBy] = useState<OrderByOptions>({name: false,  rating: true, type: OrderByTypes.DESC});
+    const [query, setQuery] = useState('?orderByRating=DESC');
 
     async function verifyUser () {
         const data = await getUserProfile();
@@ -97,19 +98,31 @@ export default function UserAnimeList() {
         }
     }
 
+    async function handleListQuery(query?: string): Promise<any> {
+    
+        const endpoint = `/user-animes/user`
+        const { data } = await api.get(`${endpoint}${query}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+    
+        if (!data) return;
+    
+        return data.payload;
+    }
+
     async function getUserAnime() {
         setLoading(true);
         const queryName = `${orderBy.name ? `orderByName=${orderBy.type}` : ''}`
         const queryRating = `${orderBy.rating ? `orderByRating=${orderBy.type}` : ''}`
-        const query = queryName && queryRating ? `?${queryName}&${queryRating}` : `?${queryName}${queryRating}`
-        try {
-            const { data } = await api.get(`/user-animes/user${query}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
+        const queryArray = [queryRating, queryName].filter(Boolean);
 
-            setUserAnime(data.payload);
+        setQuery(queryArray.length ? `?${queryArray.join('&')}` : "");
+
+        try {
+            const data = await handleListQuery(query);
+            setUserAnime(data);
         } catch (e) {
             console.log(e);
         } finally {
@@ -125,7 +138,6 @@ export default function UserAnimeList() {
         if(token) verifyUser();
     }, [token]);
 
-    // TODO: FAZER ORDENAÇÃO POR NOTA OU NOME
     // TODO: FAZER EDIÇÃO DE NOTA
 
     return (
@@ -135,6 +147,7 @@ export default function UserAnimeList() {
                     <h1 className="text-[30px] font-bold underline">My list</h1>
                     <OrderByDropDown setOrderBy={setOrderBy} prevOrderBy={orderBy}/>
                 </div>
+                <SearchInput list={userAnime} setList={setUserAnime} query={query} inputPlaceholder="Digite o nome do anime que deseja buscar" searchFunction={handleListQuery}/>
                 {loading ? (
                     <div className="text-2xl">Loading...</div>
                 ) : (

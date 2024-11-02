@@ -27,9 +27,9 @@ export function normalizeDates(n: number) {
 
 const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCardProps, ) => {
   let avg_rating = user_rating ? user_rating : Number(anime.avg_rating);
-  let start_airing = anime.start_airing.split('-');
+  let start_airing = anime.start_airing?.split('-');
 
-  start_airing.map((elem) => {
+  start_airing?.map((elem) => {
     normalizeDates(Number(elem))
   })
 
@@ -45,8 +45,10 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
     }
   }
 
+  const animeJPTitle = anime.jp_title ? anime.jp_title.substring(0, 70) + (anime.jp_title.length > 70 ?  '...' : '') : '';
+  const animeENTitle = anime.en_title ? anime.en_title.substring(0, 70) + (anime.en_title.length > 70 ?  '...' : '') : animeJPTitle;
   const description = anime.description ? anime.description.substring(0, 100) + (anime.description.length > 100 ? '...' : '') : "";
-  const date_started_airing = `${start_airing[2]}/${start_airing[1]}/${start_airing[0]}`
+  const date_started_airing = start_airing ? `${start_airing[2]}/${start_airing[1]}/${start_airing[0]}` : "";
   const avg_rating_color = (user_rating) ? categorizeAvgByColor(user_rating) : categorizeAvgByColor(avg_rating);
 
   return (
@@ -61,21 +63,21 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
       <CardHeader>
         <div className="relative w-auto h-[190px] ">
           <Image
-            src={anime.image}
+            src={anime.image ? anime.image : ""}
             alt={`Image of ${anime.en_title}`}
             fill
             className="rounded-md mb-3 object-cover"
           />
         </div>
 
-        <div className="relative h-[60px] flex flex-col gap-2">
-          <CardTitle>{anime.jp_title}</CardTitle>
-          <CardDescription>{anime.en_title}</CardDescription>
+        <div className="relative h-[80px] flex flex-col gap-2">
+          <CardTitle>{animeJPTitle}</CardTitle>
+          <CardDescription>{animeENTitle}</CardDescription>
         </div>
       </CardHeader>
 
       <CardContent className="flex flex-col text-[13px] gap-3">
-        <p className="text-justify">{description}</p>
+        <p className="text-justify h-16">{description}</p>
         <p><b>Lançado em:</b> {date_started_airing}</p>
         <p><b>Número de episódios:</b> {anime.ep_count}</p>
         
