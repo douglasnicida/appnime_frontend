@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Anime, AnimeUser } from "../types/anime";
 import { api } from "../api";
 
@@ -16,8 +16,13 @@ interface SearchBarProps {
 
 const SearchInput = ({ list, setList, query, inputPlaceholder, searchFunction, home }: SearchBarProps) => {
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const params = new URLSearchParams(window.location.search);
-    let page = Number(params.get('page'));
+    const [page, setPage] = useState(1);
+
+    useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      setPage(Number(params.get('page')));
+    })
+    
   
     async function handleSearch(e: FormEvent) {
         e.preventDefault();

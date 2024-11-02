@@ -6,6 +6,12 @@ import { Anime } from "./types/anime";
 import { api } from "./api";
 import SearchInput from "./(components)/SearchInput";
 import { PaginationComponent, updateSearchParams } from "./(components)/Pagination";
+import dynamic from "next/dynamic";
+
+// Importa o componente de forma dinâmica, desativando o SSR
+const Pagination = dynamic(() => import('./(components)/Pagination').then(mod => mod.PaginationComponent), {
+  ssr: false,
+});
 
 export default function Home() {
 
@@ -17,10 +23,9 @@ export default function Home() {
   const [urlChange, setURLChange] = useState<boolean>(false)
   const [maxPage, setMaxPage] = useState<number>(100);
 
-  const params = new URLSearchParams(window.location.search);
-  const searchParam = params.get('search')
-  const pageParam = Number(params.get('page'))
-  const limitParam = Number(params.get('limit'))
+  const [params, setParams] = useState(null);
+  // const searchParam = params.get('search')
+  
 
   //TODO: APLICAR O LAZY LOADING
 
@@ -29,7 +34,7 @@ export default function Home() {
 
     let paginationData = {
       page: 0,
-      limit: limitParam,
+      limit: 28,
       offset: 0,
     }
 
@@ -47,6 +52,9 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = Number(params.get('page'))
+    const limitParam = Number(params.get('limit'))
     async function getAnimes() {
       let trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
@@ -63,9 +71,10 @@ export default function Home() {
     }
     
     if(params.get('search') == '') getAnimes();
-  }, [pageParam, limitParam, urlChange]);
+  }, [urlChange]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
     params.set('search', '');
     params.set('page', '1');
     params.set('limit', '28');
@@ -80,7 +89,7 @@ export default function Home() {
       {
         !searchScreen && 
         <div className="">
-          <h1 className="text-[26px] font-bold underline mb-7 mt-4 uppercase">Animes Populares</h1>
+          <h1 className="text-[26px] font-bold underline mb-7 mt-4 uppercase">Animes Recentes</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {
               trendingAnimes &&
@@ -105,7 +114,7 @@ export default function Home() {
         }
       </div>
       <div className="my-5 w-max self-end">
-        <PaginationComponent setChanged={setURLChange} changed={urlChange} maxPage={maxPage}/>
+        <Pagination setChanged={setURLChange} changed={urlChange} maxPage={maxPage}/>
       </div>
     </main>
   );

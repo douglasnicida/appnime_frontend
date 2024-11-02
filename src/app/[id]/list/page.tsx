@@ -1,23 +1,12 @@
 'use client'
 
 import AnimeCard from "@/app/(components)/AnimeCard";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { api } from "@/app/api";
 import { useAuthContext } from "@/app/contexts/auth";
-import { AnimeUser  } from "@/app/types/anime";
+import { Anime, AnimeUser } from "@/app/types/anime";
 import { MixerVerticalIcon } from "@radix-ui/react-icons";
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SearchInput from "@/app/(components)/SearchInput";
 
@@ -32,7 +21,7 @@ type OrderByOptions = {
     type: OrderByTypes;
 }
 
-const OrderByDropDown = ({setOrderBy, prevOrderBy} : any) => {
+const OrderByDropDown = ({ setOrderBy, prevOrderBy }: any) => {
     const [orderBy, setOrderByState] = useState<'name' | 'rating'>('rating');
     const [orderDirection, setOrderDirection] = useState<OrderByTypes>(OrderByTypes.DESC);
 
@@ -55,23 +44,18 @@ const OrderByDropDown = ({setOrderBy, prevOrderBy} : any) => {
 
     return (
         <div className="flex space-x-4">
-    <DropdownMenu>
-        <DropdownMenuTrigger>
-            <MixerVerticalIcon width={30} height={30}/>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-            <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('name')} checked={prevOrderBy.name}>Nome</DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('rating')} checked={prevOrderBy.rating}>Rating</DropdownMenuCheckboxItem>
-            
-            <DropdownMenuSeparator />
-            
-            <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.ASC)}>Crescente</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.DESC)}>Decrescente</DropdownMenuItem>
-        </DropdownMenuContent>
-    </DropdownMenu>
-
-    
-</div>
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <MixerVerticalIcon width={30} height={30} />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('name')} checked={prevOrderBy.name}>Nome</DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem onClick={() => handleOrderByChange('rating')} checked={prevOrderBy.rating}>Rating</DropdownMenuCheckboxItem>
+                    <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.ASC)}>Crescente</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleOrderDirectionChange(OrderByTypes.DESC)}>Decrescente</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
     );
 };
 
@@ -85,12 +69,11 @@ export default function UserAnimeList() {
     const [enable, setEnable] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const [orderBy, setOrderBy] = useState<OrderByOptions>({name: false,  rating: true, type: OrderByTypes.DESC});
+    const [orderBy, setOrderBy] = useState<OrderByOptions>({ name: false, rating: true, type: OrderByTypes.DESC });
     const [query, setQuery] = useState('?orderByRating=DESC');
 
-    async function verifyUser () {
+    async function verifyUser() {
         const data = await getUserProfile();
-
         if (!data || data.id !== Number(id)) {
             router.push('/');
         } else {
@@ -99,25 +82,20 @@ export default function UserAnimeList() {
     }
 
     async function handleListQuery(query?: string): Promise<any> {
-    
-        const endpoint = `/user-animes/user`
+        const endpoint = `/user-animes/user`;
         const { data } = await api.get(`${endpoint}${query}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
         });
-    
-        if (!data) return;
-    
-        return data.payload;
+        return data?.payload;
     }
 
     async function getUserAnime() {
         setLoading(true);
-        const queryName = `${orderBy.name ? `orderByName=${orderBy.type}` : ''}`
-        const queryRating = `${orderBy.rating ? `orderByRating=${orderBy.type}` : ''}`
+        const queryName = `${orderBy.name ? `orderByName=${orderBy.type}` : ''}`;
+        const queryRating = `${orderBy.rating ? `orderByRating=${orderBy.type}` : ''}`;
         const queryArray = [queryRating, queryName].filter(Boolean);
-
         setQuery(queryArray.length ? `?${queryArray.join('&')}` : "");
 
         try {
@@ -135,31 +113,29 @@ export default function UserAnimeList() {
     }, [enable, orderBy]);
 
     useEffect(() => {
-        if(token) verifyUser();
+        if (token) verifyUser();
     }, [token]);
-
-    // TODO: FAZER EDIÇÃO DE NOTA
 
     return (
         <main className="flex flex-col container w-screen h-screen pb-20 pt-32">
             <div className="flex flex-col">
                 <div className="flex justify-between items-center">
                     <h1 className="text-[30px] font-bold underline">My list</h1>
-                    <OrderByDropDown setOrderBy={setOrderBy} prevOrderBy={orderBy}/>
+                    <OrderByDropDown setOrderBy={setOrderBy} prevOrderBy={orderBy} />
                 </div>
-                <SearchInput list={userAnime} setList={setUserAnime} query={query} inputPlaceholder="Digite o nome do anime que deseja buscar" searchFunction={handleListQuery}/>
+                <SearchInput list={userAnime} setList={setUserAnime} query={query} inputPlaceholder="Digite o nome do anime que deseja buscar" searchFunction={handleListQuery} />
                 {loading ? (
                     <div className="text-2xl">Loading...</div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-5">
                         {userAnime.length > 0 ? (
-                            userAnime.map((anime: AnimeUser , index) => (
-                                <AnimeCard 
-                                    anime={anime.anime} 
-                                    user_rating={anime.user_anime_rating} 
-                                    animesUser ={userAnime} 
-                                    setAnimesUser ={setUserAnime} 
-                                    key={index} 
+                            userAnime.map((anime: AnimeUser, index) => (
+                                <AnimeCard
+                                    anime={anime.anime}
+                                    user_rating={anime.user_anime_rating}
+                                    animesUser={userAnime}
+                                    setAnimesUser={setUserAnime}
+                                    key={index}
                                 />
                             ))
                         ) : (
@@ -169,5 +145,5 @@ export default function UserAnimeList() {
                 )}
             </div>
         </main>
-    )
+    );
 }
