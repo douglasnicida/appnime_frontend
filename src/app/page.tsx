@@ -53,8 +53,8 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const pageParam = Number(params.get('page'))
-    const limitParam = Number(params.get('limit'))
+    const pageParam = Number(params.get('page')) ? Number(params.get('page')) : 0
+    const limitParam = Number(params.get('limit')) ? Number(params.get('limit')) : 28
     async function getAnimes() {
       let trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
