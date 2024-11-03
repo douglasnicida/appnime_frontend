@@ -15,5 +15,6 @@ export type TAuthContext = {
     Login: (data: TLogin, setIsDialogOpen: any) => void;
     Logoff: () => void;
     getUserProfile: () => any;
+    SignUp: ({name, email, password}: any, setIsDialogOpen: any) => void;
     token: string | null;
 }

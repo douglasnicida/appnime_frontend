@@ -35,6 +35,48 @@ const sedgwick = Sedgwick_Ave_Display({
   weight: "400",
 });
 
+interface CurrentDialogProps {
+  option: string, 
+  setIsDialogOpen: any, 
+  Action: any
+}
+
+function ProfileFormSignUp({SignUp, setIsDialogOpen}: any) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+
+
+  function handleSignUp(e : any) {
+    e.preventDefault();
+
+    let data = {email,password, name};
+    
+    SignUp(data, setIsDialogOpen);
+  }
+
+  return (
+    <form
+      className={cn("grid items-start gap-4 sm:max-w-[425px]")}
+      onSubmit={handleSignUp}
+    >
+      <div className="grid gap-2">
+        <Label htmlFor="name">Nome</Label>
+        <Input type="text" id="name" placeholder="Ex: Fulano" onChange={(event) => { setName(event.target.value) }}/>
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="email">Email</Label>
+        <Input type="email" id="email" placeholder="exemplo@dominio.com" onChange={(event) => { setEmail(event.target.value) }}/>
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="password">Senha</Label>
+        <Input id="password" type="password" placeholder="********" onChange={(event) => { setPassword(event.target.value) }} />
+      </div>
+      <Button type="submit">Cadastrar</Button>
+    </form>
+  );
+}
+
 function ProfileForm({Login, setIsDialogOpen}: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
@@ -66,13 +108,44 @@ function ProfileForm({Login, setIsDialogOpen}: any) {
   );
 }
 
+function CurrentDialogContent({option, setIsDialogOpen, Action}: CurrentDialogProps) {
+  return(
+    <>
+      {
+        option == 'login' ?
+        <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Login</DialogTitle>
+          <DialogDescription>
+            Insira suas credenciais para acessar sua conta.
+          </DialogDescription>
+        </DialogHeader>
+        <ProfileForm Login={Action} setIsDialogOpen={setIsDialogOpen}/>
+      </DialogContent>
+      :
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Cadastro</DialogTitle>
+          <DialogDescription>
+            Insira seu nome e suas credenciais para criar sua conta.
+          </DialogDescription>
+        </DialogHeader>
+        <ProfileFormSignUp SignUp={Action} setIsDialogOpen={setIsDialogOpen}/>
+      </DialogContent>
+      }
+    </>
+  )
+}
+
 const Header = () => {
-  let { Login, Logoff, getUserProfile, token } = useAuthContext();
+  let { Login, SignUp, Logoff, getUserProfile, token } = useAuthContext();
 
   const [isLogged, setIsLogged] = useState(false);
   const [userID, setUserID] = useState<string | null>(null);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [selectedOption, setSelectedOption] = useState<string>('');
 
   const router = useRouter();
 
@@ -120,22 +193,23 @@ const Header = () => {
           ) : (
             <DropdownMenuContent>
               <DialogTrigger asChild>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => {setIsDialogOpen(true)}}>
+                <DropdownMenuItem className="cursor-pointer" 
+                onClick={() => {setSelectedOption('login'); setIsDialogOpen(true)}}>
                   <h3>Entrar</h3>
                 </DropdownMenuItem>
               </DialogTrigger>
-              <DropdownMenuItem className="cursor-pointer">Cadastrar</DropdownMenuItem>
+              <DialogTrigger asChild>
+                <DropdownMenuItem className="cursor-pointer" onClick={() => {setSelectedOption('signup'); setIsDialogOpen(true)}}>
+                  Cadastrar
+                </DropdownMenuItem>
+              </DialogTrigger>
             </DropdownMenuContent>
           )}
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Login</DialogTitle>
-              <DialogDescription>
-                Insira suas credenciais para acessar sua conta.
-              </DialogDescription>
-            </DialogHeader>
-            <ProfileForm Login={Login} setIsDialogOpen={setIsDialogOpen}/>
-          </DialogContent>
+          <CurrentDialogContent 
+            option={selectedOption}
+            setIsDialogOpen={setIsDialogOpen}
+            Action={(selectedOption === 'login') ? Login : SignUp}
+          />
         </DropdownMenu>
       </Dialog>
     </div>

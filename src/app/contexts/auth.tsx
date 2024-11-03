@@ -41,6 +41,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function SignUp({email, password, name}: any, setIsDialogOpen: any) {
+    try {
+      await api.post("/users", {email, password, name});
+      toast({
+        description: "Conta criada com sucesso.",
+      });
+      setIsDialogOpen(false);
+    } catch(e) {
+      toast({
+        description: "Email já cadastrado.",
+      });
+    }
+  }
+
   const router = useRouter();
   function Logoff() {
     setToken('');
@@ -68,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ Login, Logoff, getUserProfile ,token }}>
+    <AuthContext.Provider value={{ Login, Logoff, getUserProfile, SignUp,token }}>
       {children}
     </AuthContext.Provider>
   );
