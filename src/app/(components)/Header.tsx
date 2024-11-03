@@ -94,7 +94,7 @@ const Header = () => {
   return (
     <div className="w-full h-28 flex justify-between items-center py-4 px-16 md:px-48 lg:px-72 fixed bg-[#121212] z-50">
       <Link
-        href={'/'}
+        href={'/?search=&page=1&limit=28'}
         className={`${sedgwick.className} flex text-5xl cursor-pointer transition-all duration-200 ease-in-out group`}
       >
         <h1 className="group-hover:-translate-y-2 transition-all duration-500 ease-in-out">

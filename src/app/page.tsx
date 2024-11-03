@@ -51,10 +51,25 @@ export default function Home() {
     return resOtherAnimes
   }
 
+  // async function setInitialURLParams() {
+
+  // }
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const pageParam = Number(params.get('page')) ? Number(params.get('page')) : 0
-    const limitParam = Number(params.get('limit')) ? Number(params.get('limit')) : 28
+    params.set('search', '');
+    params.set('page', '1');
+    params.set('limit', '28');
+    
+    // Atualiza a URL sem recarregar a página
+    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
+    // window.location.reload()
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = params.get('page') != '' ? Number(params.get('page')) : 0
+    const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
     async function getAnimes() {
       let trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
@@ -73,15 +88,7 @@ export default function Home() {
     if(params.get('search') == '') getAnimes();
   }, [urlChange]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('search', '');
-    params.set('page', '1');
-    params.set('limit', '28');
-    
-    // Atualiza a URL sem recarregar a página
-    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
-  }, []);
+  
 
   return (
     <main className="flex min-h-screen flex-col mx-5 md:px-16 pt-44 md:container">
