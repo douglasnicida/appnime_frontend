@@ -68,7 +68,7 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const pageParam = params.get('page') != '' ? Number(params.get('page')) : 0
+    const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
     const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
     async function getAnimes() {
       let trendingResponse = await api.get(`/animes/recent`);
@@ -77,14 +77,13 @@ export default function Home() {
       let animesPaginationData = {
         page: pageParam - 1,
         limit: limitParam,
-        offset: 10 + (limitParam * pageParam)
+        offset: 10 + (limitParam * (pageParam-1))
       };
 
       let animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
       setAnimes(animesResponse.data.payload.data);
       setMaxPage(animesResponse.data.payload.meta.lastPage);
     }
-    
     if(params.get('search') == '') getAnimes();
   }, [urlChange]);
 

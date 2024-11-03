@@ -66,6 +66,7 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
             src={anime.image ? anime.image : ""}
             alt={`Image of ${anime.en_title}`}
             fill
+            rel="preload"
             className="rounded-md mb-3 object-cover"
           />
         </div>
