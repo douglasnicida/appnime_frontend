@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AnimeDetails() {
     const [anime, setAnime] = useState<Anime | null>();
     const { id } = useParams();
+
+    const router = useRouter()
 
     async function getAnime() {
         const { data } = await api.get(`/animes/${id}`)
@@ -52,9 +54,7 @@ export default function AnimeDetails() {
 
     return (
         <main className="flex min-h-screen flex-col px-16 pt-32 container">
-            <Link href={'/?search=&page=1&limit=28'}>
-                <ArrowLeftIcon height={30} width={30} className="mb-4"/>
-            </Link>
+            <ArrowLeftIcon height={30} width={30} className="mb-4 cursor-pointer" onClick={() => {router.back()}}/>
             {
                 anime &&
                 <div className="relative w-full h-[calc(100vh-190px)] flex flex-col md:flex-row">
