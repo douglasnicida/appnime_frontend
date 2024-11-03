@@ -52,7 +52,7 @@ export default function AnimeDetails() {
 
     return (
         <main className="flex min-h-screen flex-col px-16 pt-32 container">
-            <Link href={'/'}>
+            <Link href={'/?search=&page=1&limit=28'}>
                 <ArrowLeftIcon height={30} width={30} className="mb-4"/>
             </Link>
             {
