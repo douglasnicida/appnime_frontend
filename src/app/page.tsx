@@ -22,11 +22,7 @@ export default function Home() {
 
   const [urlChange, setURLChange] = useState<boolean>(false)
   const [maxPage, setMaxPage] = useState<number>(100);
-
-  const [params, setParams] = useState(null);
-  // const searchParam = params.get('search')
   
-
   //TODO: APLICAR O LAZY LOADING
 
   async function fetchSearchAnimes(inputValue: string) {
@@ -51,25 +47,11 @@ export default function Home() {
     return resOtherAnimes
   }
 
-  // async function setInitialURLParams() {
-
-  // }
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('search', '');
-    params.set('page', '1');
-    params.set('limit', '28');
-    
-    // Atualiza a URL sem recarregar a página
-    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
-    // window.location.reload()
-  }, []);
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
     const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
+
     async function getAnimes() {
       let trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
@@ -81,13 +63,24 @@ export default function Home() {
       };
 
       let animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
+
       setAnimes(animesResponse.data.payload.data);
       setMaxPage(animesResponse.data.payload.meta.lastPage);
     }
+    
     if(params.get('search') == '') getAnimes();
   }, [urlChange]);
 
-  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('search', '');
+    params.set('page', '1');
+    params.set('limit', '28');
+    
+    // Atualiza a URL sem recarregar a página
+    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
+    // window.location.reload()
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col mx-5 md:px-16 pt-44 md:container">
