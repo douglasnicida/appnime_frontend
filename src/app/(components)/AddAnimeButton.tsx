@@ -100,9 +100,12 @@ export default function AddAnimeButton({ anime } : AddAnimeButtonProps ) {
                     </div>
 
                     <DialogFooter className="sm:justify-start">
+                      {
+                        token &&
                         <Button type="submit" size="lg" className="flex w-full mt-3 px-3 self-end">
                             Adicionar
                         </Button>
+                      }
                     </DialogFooter>
                     
                 </form>

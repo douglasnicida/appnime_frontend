@@ -58,7 +58,7 @@ const SearchInput = ({ list, setList, query, inputPlaceholder, searchFunction, h
   
     return (
       <form className="flex my-5" onSubmit={handleSearch}>
-        <Input type="search" placeholder={inputPlaceholder} ref={searchInputRef} />
+        <Input type="search" placeholder={inputPlaceholder} ref={searchInputRef}/>
         <Button className="gap-2" type="submit">
           <MagnifyingGlassIcon width={20} height={20} />
           Buscar
