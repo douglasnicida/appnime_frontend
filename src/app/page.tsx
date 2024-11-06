@@ -23,8 +23,8 @@ export default function Home() {
   const [urlChange, setURLChange] = useState<boolean>(false)
   const [maxPage, setMaxPage] = useState<number>(100);
   
+  // TODO: VERIFICAR MOTIVO DE NA PRIMEIRA RENDERIZAÇÃO NÃO APARECER OS ANIMES
   //TODO: APLICAR O LAZY LOADING
-
   async function fetchSearchAnimes(inputValue: string) {
     // const { data } = await axios.get(`https://kitsu.io/api/edge/anime?filter[text]=${inputValue}`)
 
@@ -61,14 +61,14 @@ export default function Home() {
         limit: limitParam,
         offset: 10 + (limitParam * (pageParam-1))
       };
-
+      console.log(params.get('search'))
       let animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
 
       setAnimes(animesResponse.data.payload.data);
       setMaxPage(animesResponse.data.payload.meta.lastPage);
     }
     
-    if(params.get('search') == '') getAnimes();
+    if(params.get('search') == '' || params.get('search') == null) getAnimes();
   }, [urlChange]);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function Home() {
     
     // Atualiza a URL sem recarregar a página
     window.history.pushState({}, '', `${window.location.pathname}?${params}`);
-    // window.location.reload()
+    setURLChange(!urlChange)
   }, []);
 
   return (

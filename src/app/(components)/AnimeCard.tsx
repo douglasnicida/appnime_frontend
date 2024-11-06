@@ -14,6 +14,7 @@ import Link from "next/link";
 import AddAnimeButton from "./AddAnimeButton";
 import RemoveAnimeButton from "./RemoveAnimeButton";
 import { SetStateAction } from "react";
+import { useAuthContext } from "../contexts/auth";
 
 export interface AnimeCardProps {
   anime: Anime;
@@ -51,6 +52,8 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
   const date_started_airing = start_airing ? `${start_airing[2]}/${start_airing[1]}/${start_airing[0]}` : "";
   const avg_rating_color = (user_rating) ? categorizeAvgByColor(user_rating) : categorizeAvgByColor(avg_rating);
 
+  const { token } = useAuthContext();
+
   return (
     <Card className="relative border-white/20 w-[310px]">
       
@@ -85,7 +88,7 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
         <div className="flex items-center justify-between">
           <p><b className={`${avg_rating_color}`}>{avg_rating.toFixed(1)}</b>/10.0</p>
           {
-            !user_rating ? <AddAnimeButton anime={anime}/> : <RemoveAnimeButton anime={anime} animesUserList={animesUser ? animesUser : []} setAnimesUserList={setAnimesUser ? setAnimesUser : null}/>
+            token && !user_rating ? <AddAnimeButton anime={anime}/> : <RemoveAnimeButton anime={anime} animesUserList={animesUser ? animesUser : []} setAnimesUserList={setAnimesUser ? setAnimesUser : null}/>
           }
         </div>
       </CardContent>
