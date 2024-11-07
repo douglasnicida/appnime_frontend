@@ -7,6 +7,7 @@ import { api } from "./api";
 import SearchInput from "./(components)/SearchInput";
 import { PaginationComponent, updateSearchParams } from "./(components)/Pagination";
 import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Importa o componente de forma dinâmica, desativando o SSR
 const Pagination = dynamic(() => import('./(components)/Pagination').then(mod => mod.PaginationComponent), {
@@ -22,6 +23,8 @@ export default function Home() {
 
   const [urlChange, setURLChange] = useState<boolean>(false)
   const [maxPage, setMaxPage] = useState<number>(100);
+
+  const [loading, setLoading] = useState<boolean>(true);
   
   // TODO: VERIFICAR MOTIVO DE NA PRIMEIRA RENDERIZAÇÃO NÃO APARECER OS ANIMES
   //TODO: APLICAR O LAZY LOADING
@@ -49,22 +52,24 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
-    const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
-
+    
     async function getAnimes() {
-      let trendingResponse = await api.get(`/animes/recent`);
+      const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
+      const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
+      
+      const trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
 
-      let animesPaginationData = {
+      const animesPaginationData = {
         page: pageParam - 1,
         limit: limitParam,
         offset: 10 + (limitParam * (pageParam-1))
       };
-      console.log(params.get('search'))
-      let animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
-
+      
+      setLoading(true)
+      const animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
       setAnimes(animesResponse.data.payload.data);
+      setLoading(false);
       setMaxPage(animesResponse.data.payload.meta.lastPage);
     }
     
@@ -104,12 +109,18 @@ export default function Home() {
       <h1 className={`text-[26px] font-bold underline mb-7 ${searchScreen ? '-mt-1' : 'mt-16'} uppercase`}>Animes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {
-          animes.length > 0 &&
+          !loading ?
           animes.map((anime, index) => {
             return (
               <AnimeCard anime={anime} key={index}/>
             )
-          })
+          }) :
+          <>
+            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+          </>
         }
       </div>
       <div className="my-5 w-max self-end">
