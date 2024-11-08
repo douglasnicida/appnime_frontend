@@ -89,7 +89,12 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
         <div className="flex items-center justify-between">
           <p><b className={`${avg_rating_color}`}>{avg_rating.toFixed(1)}</b>/10.0</p>
           {
-            token && !user_rating ? <AddAnimeButton anime={anime}/> : <RemoveAnimeButton anime={anime} animesUserList={animesUser ? animesUser : []} setAnimesUserList={setAnimesUser ? setAnimesUser : null}/>
+            token ? 
+            !user_rating ? 
+            <AddAnimeButton anime={anime}/> : 
+            <RemoveAnimeButton anime={anime} animesUserList={animesUser ? animesUser : []} setAnimesUserList={setAnimesUser ? setAnimesUser : null}/>
+            :
+            ''
           }
         </div>
       </CardContent>
