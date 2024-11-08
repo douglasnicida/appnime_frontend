@@ -39,7 +39,7 @@ export function PaginationComponent({setChanged, changed, maxPage}: PaginationPr
     useEffect(() => {
         const windowParams = new URLSearchParams(window.location.search);
         setParams(windowParams)
-        setPage(Number(params?.get('page')))
+        setPage(Number(windowParams.get('page')))
     }, [])
 
     const handleNextPage = () => {
@@ -62,7 +62,7 @@ export function PaginationComponent({setChanged, changed, maxPage}: PaginationPr
     };
 
     useEffect(() => {
-        setPage(Number(params?.get('page')));
+        setPage(params?.get('page') ? Number(params.get('page')) : 1);
     }, [handleNextPage, handlePreviousPage])
 
     return (
