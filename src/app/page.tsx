@@ -51,7 +51,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const params = new URLSearchParams(window && window.location.search);
+    const params = new URLSearchParams(window.location.search);
     
     async function getAnimes() {
       const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1

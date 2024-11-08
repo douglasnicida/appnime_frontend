@@ -32,12 +32,14 @@ interface PaginationProps {
 }
   
 export function PaginationComponent({setChanged, changed, maxPage}: PaginationProps) {
-    const params = new URLSearchParams(window && window.location.search);
-
-    const [page, setPage] = useState<number>(Number(params.get('page')))
-
+    
+    const [params, setParams] = useState<URLSearchParams | null>(null);
+    const [page, setPage] = useState<number>(1)
+    
     useEffect(() => {
-        setPage(Number(params.get('page')))
+        const windowParams = new URLSearchParams(window.location.search);
+        setParams(windowParams)
+        setPage(Number(params?.get('page')))
     }, [])
 
     const handleNextPage = () => {
@@ -60,7 +62,7 @@ export function PaginationComponent({setChanged, changed, maxPage}: PaginationPr
     };
 
     useEffect(() => {
-        setPage(Number(params.get('page')));
+        setPage(Number(params?.get('page')));
     }, [handleNextPage, handlePreviousPage])
 
     return (
