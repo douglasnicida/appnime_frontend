@@ -32,7 +32,7 @@ interface PaginationProps {
 }
   
 export function PaginationComponent({setChanged, changed, maxPage}: PaginationProps) {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window && window.location.search);
 
     const [page, setPage] = useState<number>(Number(params.get('page')))
 

@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import AnimeCard from "./(components)/AnimeCard";
+import { Suspense, useEffect, useState } from "react";
+// import AnimeCard from "./(components)/AnimeCard";
 import { Anime } from "./types/anime";
 import { api } from "./api";
 import SearchInput from "./(components)/SearchInput";
@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Importa o componente de forma dinâmica, desativando o SSR
-const Pagination = dynamic(() => import('./(components)/Pagination').then(mod => mod.PaginationComponent), {
+const AnimeCard = dynamic(() => import('./(components)/AnimeCard').then(mod => mod.default), {
   ssr: false,
 });
 
@@ -51,7 +51,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window && window.location.search);
     
     async function getAnimes() {
       const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
@@ -76,17 +76,6 @@ export default function Home() {
     if(params.get('search') == '' || params.get('search') == null) getAnimes();
   }, [urlChange]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('search', '');
-    params.set('page', '1');
-    params.set('limit', '28');
-    
-    // Atualiza a URL sem recarregar a página
-    window.history.pushState({}, '', `${window.location.pathname}?${params}`);
-    setURLChange(!urlChange)
-  }, []);
-
   return (
     <main className="flex min-h-screen flex-col mx-5 md:px-16 pt-44 md:container">
       <SearchInput list={animes} setList={setAnimes} query="" inputPlaceholder="Digite o nome do anime" home={setSearchScreen} searchFunction={handleHomeSearch}/>
@@ -95,37 +84,46 @@ export default function Home() {
         <div className="">
           <h1 className="text-[26px] font-bold underline mb-7 mt-4 uppercase">Animes Recentes</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <Suspense fallback={<FallBackSkeleton />}>
             {
-              trendingAnimes &&
               trendingAnimes.map((anime, index) => {
                 return (
                   <AnimeCard anime={anime} key={index}/>
                 )
               })
             }
+            </Suspense>
           </div>
         </div>
       }
       <h1 className={`text-[26px] font-bold underline mb-7 ${searchScreen ? '-mt-1' : 'mt-16'} uppercase`}>Animes</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <Suspense fallback={<FallBackSkeleton />}>
         {
           !loading ?
           animes.map((anime, index) => {
             return (
               <AnimeCard anime={anime} key={index}/>
             )
-          }) :
-          <>
-            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
-            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
-            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
-            <Skeleton className="h-[430px] w-[310px] rounded-xl" />
-          </>
+          }) : 
+          <FallBackSkeleton />
         }
+        </Suspense>
       </div>
       <div className="my-5 w-max self-end">
-        <Pagination setChanged={setURLChange} changed={urlChange} maxPage={maxPage}/>
+        <PaginationComponent setChanged={setURLChange} changed={urlChange} maxPage={maxPage}/>
       </div>
     </main>
   );
+}
+
+const FallBackSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+      <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+      <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+      <Skeleton className="h-[430px] w-[310px] rounded-xl" />
+    </>
+  )
 }
