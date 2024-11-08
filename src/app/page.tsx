@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, Suspense, useEffect, useState } from "react";
 // import AnimeCard from "./(components)/AnimeCard";
 import { Anime } from "./types/anime";
 import { api } from "./api";
@@ -14,18 +14,41 @@ const AnimeCard = dynamic(() => import('./(components)/AnimeCard').then(mod => m
   ssr: false,
 });
 
+function useQueryParams(): [{ page: number; limit: number; search: string }, Dispatch<SetStateAction<boolean>>, boolean] {
+  const [urlChange, setURLChange] = useState<boolean>(false);
+  const [params, setParams] = useState<{ page: number; limit: number; search: string }>({
+    page: 1,
+    limit: 28,
+    search: '',
+  });
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    setParams({
+      page: queryParams.get('page') ? Number(queryParams.get('page')) : 1,
+      limit: queryParams.get('limit') ? Number(queryParams.get('limit')) : 28,
+      search: queryParams.get('search') || '',
+    });
+  }, [urlChange]);
+
+  return [params, setURLChange, urlChange];
+}
+
+
 export default function Home() {
 
   const [trendingAnimes, setTrendingAnimes] = useState<Anime[] | []>([]);
   const [animes, setAnimes] = useState<Anime[] | []>([]);
 
   const [searchScreen, setSearchScreen] = useState<boolean>(false);
-
-  const [urlChange, setURLChange] = useState<boolean>(false)
+  const [params, setURLChange, urlChange] = useQueryParams();
+  const { page, limit, search } = params;
   const [maxPage, setMaxPage] = useState<number>(100);
-
+  
   const [loading, setLoading] = useState<boolean>(true);
   
+  
+
   // TODO: VERIFICAR MOTIVO DE NA PRIMEIRA RENDERIZAÇÃO NÃO APARECER OS ANIMES
   //TODO: APLICAR O LAZY LOADING
   async function fetchSearchAnimes(inputValue: string) {
@@ -50,31 +73,28 @@ export default function Home() {
     return resOtherAnimes
   }
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    
+useEffect(() => {
     async function getAnimes() {
-      const pageParam = params.get('page') != '' ? Number(params.get('page')) : 1
-      const limitParam = params.get('limit') != '' ? Number(params.get('limit')) : 28
-      
       const trendingResponse = await api.get(`/animes/recent`);
       setTrendingAnimes(trendingResponse.data.payload);
 
       const animesPaginationData = {
-        page: pageParam - 1,
-        limit: limitParam,
-        offset: 10 + (limitParam * (pageParam-1))
+        page: page - 1,
+        limit: limit,
+        offset: 10 + (limit * (page - 1))
       };
       
-      setLoading(true)
+      setLoading(true);
       const animesResponse = await api.get(`/animes?page=${animesPaginationData.page}&limit=${animesPaginationData.limit}&offset=${animesPaginationData.offset}`);
       setAnimes(animesResponse.data.payload.data);
       setLoading(false);
       setMaxPage(animesResponse.data.payload.meta.lastPage);
     }
     
-    if(params.get('search') == '' || params.get('search') == null) getAnimes();
-  }, [urlChange]);
+    if (!search) {
+      getAnimes();
+    }
+  }, [page, limit, search]);
 
   return (
     <main className="flex min-h-screen flex-col mx-5 md:px-16 pt-44 md:container">

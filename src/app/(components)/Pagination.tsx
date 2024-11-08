@@ -30,79 +30,70 @@ interface PaginationProps {
     changed: any
     maxPage: number
 }
-  
-export function PaginationComponent({setChanged, changed, maxPage}: PaginationProps) {
-    
-    const [params, setParams] = useState<URLSearchParams | null>(null);
-    const [page, setPage] = useState<number>(1)
-    
+
+export function PaginationComponent({ setChanged, changed, maxPage }: PaginationProps) {
+    const [page, setPage] = useState<number>(1);
+
     useEffect(() => {
         const windowParams = new URLSearchParams(window.location.search);
-        setParams(windowParams)
-        setPage(Number(windowParams.get('page')))
-    }, [])
+        const pageParam = windowParams.get('page');
+        setPage(pageParam ? Number(pageParam) : 1);
+    }, [changed]);
+
+    const updatePage = (newPage: number) => {
+        if (newPage >= 1 && newPage <= maxPage) {
+            updateSearchParams({ page: String(newPage) });
+            setPage(newPage); // Atualizar o estado local
+            setChanged(!changed);
+        }
+    };
 
     const handleNextPage = () => {
-        if(page < maxPage) {
-            updateSearchParams({ page: String(page + 1) });
-            setChanged(!changed)
-        }
+        updatePage(page + 1);
+    };
+
+    const handlePreviousPage = () => {
+        updatePage(page - 1);
     };
 
     const handleUpdatePage = (current: number) => {
-        updateSearchParams({ page: String(current) });
-        setChanged(!changed)
-    }
-
-    const handlePreviousPage = () => {
-        if (page > 1) {
-            updateSearchParams({ page: String(page - 1) });
-            setChanged(!changed)
-        }
+        updatePage(current);
     };
-
-    useEffect(() => {
-        setPage(params?.get('page') ? Number(params.get('page')) : 1);
-    }, [handleNextPage, handlePreviousPage])
 
     return (
         <Pagination>
-        <PaginationContent>
-            <PaginationItem>
-                <PaginationPrevious onClick={handlePreviousPage}/>
-            </PaginationItem>
-
-            <PaginationItem onClick={() => {handleUpdatePage((page == 1) ? 1 : page - 1)}}>
-                <PaginationLink isActive={page == 1}>{page == 1 ? 1 : page - 1}</PaginationLink>
-            </PaginationItem>
-
-            {
-                maxPage!=1 &&
-
-                <PaginationItem onClick={() => {handleUpdatePage((page == 1) ? 2 : page)}}>
-                    <PaginationLink isActive={page != 1 && page < maxPage}>
-                        {(page == 1) ? 2 : page}
-                    </PaginationLink>
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious onClick={handlePreviousPage} />
                 </PaginationItem>
-            }
 
-            {
-                page < maxPage &&
-                <PaginationItem onClick={() => {handleUpdatePage((page == 1) ? 3 : page + 1)}}>
-                    <PaginationLink>{(page == 1) ? 3 : page + 1}</PaginationLink>
+                <PaginationItem onClick={() => handleUpdatePage(page === 1 ? 1 : page - 1)}>
+                    <PaginationLink isActive={page === 1}>{page === 1 ? 1 : page - 1}</PaginationLink>
                 </PaginationItem>
-            }
-            
-            <PaginationItem className="cursor-default">
-                <PaginationEllipsis />
-            </PaginationItem>
 
-            <PaginationItem onClick={handleNextPage}>
-                <PaginationNext/>
-            </PaginationItem>
+                {maxPage !== 1 && (
+                    <PaginationItem onClick={() => handleUpdatePage(page === 1 ? 2 : page)}>
+                        <PaginationLink isActive={page !== 1 && page < maxPage}>
+                            {page === 1 ? 2 : page}
+                        </PaginationLink>
+                    </PaginationItem>
+                )}
 
-        </PaginationContent>
+                {page < maxPage && (
+                    <PaginationItem onClick={() => handleUpdatePage(page === 1 ? 3 : page + 1)}>
+                        <PaginationLink>{page === 1 ? 3 : page + 1}</PaginationLink>
+                    </PaginationItem>
+                )}
+
+                <PaginationItem className="cursor-default">
+                    <PaginationEllipsis />
+                </PaginationItem>
+
+                <PaginationItem onClick={handleNextPage}>
+                    <PaginationNext />
+                </PaginationItem>
+            </PaginationContent>
         </Pagination>
-    )
+    );
 }
   

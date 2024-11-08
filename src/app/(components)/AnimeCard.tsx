@@ -70,6 +70,7 @@ const AnimeCard = ({ anime, user_rating, animesUser, setAnimesUser } : AnimeCard
             alt={`Image of ${anime.en_title}`}
             fill
             rel="preload"
+            sizes="lg"
             className="rounded-md mb-3 object-cover"
           />
         </div>
