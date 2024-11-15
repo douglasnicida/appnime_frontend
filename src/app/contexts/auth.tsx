@@ -25,9 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await api.post("/auth/login", data).then((res) => {
         setToken(res.data.access_token);
         window.localStorage.setItem('token', res.data.access_token);
+
         toast({
           description: "Conta acessada com sucesso.",
         });
+
         setIsDialogOpen(false);
       });
      
@@ -82,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ Login, Logoff, getUserProfile, SignUp,token }}>
+    <AuthContext.Provider value={{ Login, Logoff, getUserProfile, SignUp, token }}>
       {children}
     </AuthContext.Provider>
   );
